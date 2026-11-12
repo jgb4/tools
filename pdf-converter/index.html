@@ -323,7 +323,8 @@ async function pdfToImages(file, { scale = 2, format = "png" } = {}) {
     canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height);
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    // "print" intent renders without waiting for animation frames, so it keeps going in a background tab.
+    await page.render({ canvasContext: ctx, viewport, intent: "print" }).promise;
     const name = doc.numPages === 1 ? `${stripExt(file.name)}.${format}`
       : `${stripExt(file.name)}-page-${String(i).padStart(3, "0")}.${format}`;
     results.push({ blob: await canvasTo(canvas, format), name });
